@@ -1,0 +1,39 @@
+import smbus
+import time
+
+address = 0x23
+start = 0x01
+stop = 0x00
+reset = 0x07
+
+bus = smbus.SMBus(1)
+
+def lightRead():
+	newAddress = bus.read_i2c_block_data(BH1750_sensor, address)
+	value = lightConversion(newAddress)
+	return value
+	
+def lightConversion(newAddress):
+	conversion = ((newAddress[1] + (256 * newAddress[0]))/1.2)
+	return conversion
+	
+try:
+	while 1:
+		intensity = lightRead()
+		print(intensity)
+		
+		print("Status:")
+		if(intensity >= 500):
+			print("Too bright")
+		elif(intensity >= 200 and intensity < 500):
+			print("Bright")
+		elif(intensity >= 50 and intensity < 200):
+			print("Tedium")
+		elif(intensity > 20 and intensity < 50):
+			print("Dark")
+		elif(intensity < 20):
+			print("Too dark")
+		time.sleep(1)
+
+except KeyboardInterrupt:
+	print("Exitting")
